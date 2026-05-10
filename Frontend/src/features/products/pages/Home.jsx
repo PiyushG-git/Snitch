@@ -9,7 +9,7 @@ const Home = () => {
     const user = useSelector(state => state.auth.user);
     const { handleGetAllProducts } = useProduct();
 
-    const naviagate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         handleGetAllProducts();
@@ -27,30 +27,7 @@ const Home = () => {
                 className="min-h-screen selection:bg-[#C9A96E]/30"
                 style={{ backgroundColor: '#fbf9f6', fontFamily: "'Inter', sans-serif" }}
             >
-                {/* ── Navbar ── */}
-                <nav className="px-8 lg:px-16 xl:px-24 pt-10 pb-6 flex items-center justify-between border-b" style={{ borderColor: '#e4e2df' }}>
-                    <Link to="/"
-                        className="text-sm font-medium tracking-[0.35em] uppercase hover:opacity-80 transition-opacity"
-                        style={{ fontFamily: "'Cormorant Garamond', serif", color: '#C9A96E' }}
-                    >
-                        Snitch.
-                    </Link>
-                    <div className="flex gap-6 items-center text-[10px] uppercase tracking-[0.2em] font-medium" style={{ color: '#7A6E63' }}>
-                        {user ? (
-                            <>
-                                <span style={{ color: '#1b1c1a' }}>{user.fullname}</span>
-                                {user.role === 'seller' && (
-                                    <Link to="/seller/dashboard" className="transition-colors hover:text-[#C9A96E]">Seller Dashboard</Link>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <Link to="/login" className="transition-colors hover:text-[#C9A96E]">Sign In</Link>
-                                <Link to="/register" className="transition-colors hover:text-[#C9A96E]">Sign Up</Link>
-                            </>
-                        )}
-                    </div>
-                </nav>
+               
 
                 <div className="max-w-7xl mx-auto px-8 lg:px-16 xl:px-24">
                     {/* ── Hero / Header ── */}
@@ -74,13 +51,13 @@ const Home = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16 pb-32">
                             {products.map(product => {
                                 const imageUrl = product.images && product.images.length > 0
-                                    ? product.images[0].url
+                                    ? product.images[ 0 ].url
                                     : '/snitch_editorial_warm.png'; // Fallback
 
                                 return (
                                     <div
-                                    onClick={()=>naviagate(`/product/${product._id}`)}
-                                    key={product._id} className="group cursor-pointer flex flex-col">
+                                        onClick={() => navigate(`/product/${product._id}`)}
+                                        key={product._id} className="group cursor-pointer flex flex-col">
                                         {/* Image Container */}
                                         <div className="aspect-[4/5] overflow-hidden mb-6" style={{ backgroundColor: '#f5f3f0' }}>
                                             <img
@@ -130,7 +107,7 @@ const Home = () => {
                         </div>
                     )}
                 </div>
-                
+
                 {/* ── Footer ── */}
                 <footer className="border-t py-12 text-center" style={{ borderColor: '#e4e2df' }}>
                     <span
