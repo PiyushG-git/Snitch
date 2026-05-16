@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { useProduct } from '../hooks/useProduct';
 
@@ -38,11 +38,11 @@ const CreateProduct = () => {
         e.target.value = '';
     };
 
-    const handleDrop = useCallback((e) => {
+    const handleDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
         if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
-    }, [images]);
+    };
 
     const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
     const handleDragLeave = () => setIsDragging(false);

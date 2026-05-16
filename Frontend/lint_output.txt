@@ -1,0 +1,98 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\app\App.jsx
+  20:6  warning  React Hook useEffect has a missing dependency: 'handleGetMe'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\Shared\Components\Nav.jsx
+  6:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\auth\hook\useAuth.js
+  1:10  error  'setError' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\cart\pages\Cart.jsx
+  28:13  error    'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                             no-unused-vars
+  28:20  error    'isLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                         no-unused-vars
+  36:8   warning  React Hook useEffect has a missing dependency: 'handleGetCart'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\products\pages\CreateProduct.jsx
+  45:8  warning  React Hook useCallback has a missing dependency: 'addFiles'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\products\pages\Dashboard.jsx
+  13:8  warning  React Hook useEffect has a missing dependency: 'handleGetSellerProduct'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\products\pages\Home.jsx
+   9:11  error    'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                     no-unused-vars
+  16:8   warning  React Hook useEffect has a missing dependency: 'handleGetAllProducts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\products\pages\ProductDetail.jsx
+  11:11  error    'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  29:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  27 |
+  28 |     useEffect(() => {
+> 29 |         fetchProductDetails();
+     |         ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  30 |     }, [ productId ]);
+  31 |
+  32 |     useEffect(() => {                                                                                   react-hooks/set-state-in-effect
+  30:8   warning  React Hook useEffect has a missing dependency: 'fetchProductDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  34:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  32 |     useEffect(() => {
+  33 |         if (product?.variants?.length > 0) {
+> 34 |             setSelectedAttributes(product.variants[ 0 ].attributes || {});
+     |             ^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  35 |         }
+  36 |     }, [ product ]);
+  37 |  react-hooks/set-state-in-effect
+  72:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  70 |
+  71 |     useEffect(() => {
+> 72 |         setSelectedImage(0);
+     |         ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  73 |     }, [ activeVariant ]);
+  74 |
+  75 |     const handleAttributeChange = (attrName, value) => {                                                 react-hooks/set-state-in-effect
+
+C:\Users\Piyush Gupta\OneDrive\Documents\Project\Snitch\Frontend\src\features\products\pages\SellerProductDetails.jsx
+  47:5  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  45 |
+  46 |   useEffect(() => {
+> 47 |     fetchProductDetails();
+     |     ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  48 |   }, [ productId ]);
+  49 |
+  50 |   // Handlers for modifying existing variant stock natively  react-hooks/set-state-in-effect
+  48:6  warning  React Hook useEffect has a missing dependency: 'fetchProductDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+
+✖ 17 problems (10 errors, 7 warnings)
+

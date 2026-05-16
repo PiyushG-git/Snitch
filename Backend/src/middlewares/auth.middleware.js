@@ -1,6 +1,13 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 import userModel from "../models/user.model.js";
+import BlacklistedToken from "../models/blacklistedToken.model.js";
+
+
+async function isTokenBlacklisted(token) {
+    const found = await BlacklistedToken.findOne({ token });
+    return !!found;
+}
 
 
 export const authenticateUser = async (req, res, next) => {
@@ -8,6 +15,11 @@ export const authenticateUser = async (req, res, next) => {
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" })
+    }
+
+    // Check if token has been blacklisted (logged out)
+    if (await isTokenBlacklisted(token)) {
+        return res.status(401).json({ message: "Token has been invalidated. Please log in again." })
     }
 
     try {
@@ -35,6 +47,11 @@ export const authenticateSeller = async (req, res, next) => {
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" })
+    }
+
+    // Check if token has been blacklisted (logged out)
+    if (await isTokenBlacklisted(token)) {
+        return res.status(401).json({ message: "Token has been invalidated. Please log in again." })
     }
 
     try {

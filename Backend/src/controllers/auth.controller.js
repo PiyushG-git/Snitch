@@ -1,6 +1,7 @@
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken"
 import { config } from "../config/config.js";
+import BlacklistedToken from "../models/blacklistedToken.model.js";
 
 
 async function sendTokenResponse(user, res, message) {
@@ -121,4 +122,29 @@ export const getMe = async (req, res) => {
             role: user.role
         }
     })
+}
+
+export const logout = async (req, res) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.status(401).json({ message: "No active session" });
+    }
+
+    try {
+        // Decode token to get expiry time (without verifying – it's already been verified by middleware)
+        const decoded = jwt.decode(token);
+        const expiresAt = new Date(decoded.exp * 1000);
+
+        // Save to blacklist
+        await BlacklistedToken.create({ token, expiresAt });
+
+        // Clear the cookie
+        res.clearCookie("token", { httpOnly: true, sameSite: "lax" });
+
+        return res.status(200).json({ message: "Logged out successfully", success: true });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error during logout" });
+    }
 }

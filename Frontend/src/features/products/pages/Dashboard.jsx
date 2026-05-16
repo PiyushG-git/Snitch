@@ -10,7 +10,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         handleGetSellerProduct();
-    }, []);
+    }, [handleGetSellerProduct]);
 
     return (
         <>

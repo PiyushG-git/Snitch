@@ -26,26 +26,25 @@ const SellerProductDetails = () => {
   const { productId } = useParams();
   const { handleGetProductById, handleAddProductVariant } = useProduct();
 
-  async function fetchProductDetails() {
-    setLoading(true);
-    try {
-      const data = await handleGetProductById(productId);
-      const prod = data?.product || data;
-      setProduct(prod);
-      // Initialize variants locally
-      if (prod?.variants) {
-        setLocalVariants(prod.variants);
-      }
-    } catch (error) {
-      console.error("Failed to fetch product details", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
+    async function fetchProductDetails() {
+      setLoading(true);
+      try {
+        const data = await handleGetProductById(productId);
+        const prod = data?.product || data;
+        setProduct(prod);
+        // Initialize variants locally
+        if (prod?.variants) {
+          setLocalVariants(prod.variants);
+        }
+      } catch (error) {
+        console.error("Failed to fetch product details", error);
+      } finally {
+        setLoading(false);
+      }
+    }
     fetchProductDetails();
-  }, [ productId ]);
+  }, [ productId, handleGetProductById ]);
 
   // Handlers for modifying existing variant stock natively
   const handleStockChange = (index, newStock) => {

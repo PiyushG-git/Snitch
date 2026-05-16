@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 import { useProduct } from '../hooks/useProduct';
 import { useCart } from '../../cart/hook/useCart';
 
@@ -8,32 +9,62 @@ const ProductDetail = () => {
     const [ product, setProduct ] = useState(null);
     const [ selectedImage, setSelectedImage ] = useState(0);
     const [ selectedAttributes, setSelectedAttributes ] = useState({});
-    const navigate = useNavigate();
     const { handleGetProductById } = useProduct();
-    const { handleAddItem } = useCart()
+    const { handleAddItem, handleIncrementCartItem, handleDecrementCartItem } = useCart()
+    const navigate = useNavigate();
+    const cart = useSelector(state => state.cart);
 
-
-
-
-    async function fetchProductDetails() {
+    const onAddToCart = async () => {
+        if (!product) return;
+        if (!activeVariant) {
+            alert("Please select available options before adding to cart.");
+            return;
+        }
         try {
-            const data = await handleGetProductById(productId);
-            // Handle both cases depending on how API is structured
-            setProduct(data?.product || data);
+            await handleAddItem({
+                productId: product._id,
+                variantId: activeVariant._id
+            });
         } catch (error) {
-            console.error("Failed to fetch product details", error);
+            console.error(error);
         }
-    }
+    };
+
+    const onBuyNow = async () => {
+        if (!product) return;
+        if (!activeVariant) {
+            alert("Please select available options before proceeding.");
+            return;
+        }
+        try {
+            await handleAddItem({
+                productId: product._id,
+                variantId: activeVariant._id
+            });
+            navigate("/cart");
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
+
 
     useEffect(() => {
+        async function fetchProductDetails() {
+            try {
+                const data = await handleGetProductById(productId);
+                const fetchedProduct = data?.product || data;
+                setProduct(fetchedProduct);
+                if (fetchedProduct?.variants?.length > 0) {
+                    setSelectedAttributes(fetchedProduct.variants[ 0 ].attributes || {});
+                }
+            } catch (error) {
+                console.error("Failed to fetch product details", error);
+            }
+        }
         fetchProductDetails();
-    }, [ productId ]);
-
-    useEffect(() => {
-        if (product?.variants?.length > 0) {
-            setSelectedAttributes(product.variants[ 0 ].attributes || {});
-        }
-    }, [ product ]);
+    }, [ productId, handleGetProductById ]);
 
     const activeVariant = useMemo(() => {
         if (!product?.variants || product.variants.length === 0) return null;
@@ -48,6 +79,13 @@ const ProductDetail = () => {
         });
     }, [ product, selectedAttributes ]);
 
+    const cartItem = useMemo(() => {
+        if (!product || !cart?.items) return null;
+        return cart.items.find(item => 
+            (item.product?._id === product._id || item.product === product._id) && 
+            (activeVariant ? item.variant === activeVariant._id : !item.variant)
+        );
+    }, [product, activeVariant, cart]);
 
     console.log({ product, activeVariant })
 
@@ -68,9 +106,7 @@ const ProductDetail = () => {
         return attrs;
     }, [ product ]);
 
-    useEffect(() => {
-        setSelectedImage(0);
-    }, [ activeVariant ]);
+
 
     const handleAttributeChange = (attrName, value) => {
         const newAttrs = { ...selectedAttributes, [ attrName ]: value };
@@ -93,6 +129,7 @@ const ProductDetail = () => {
                 setSelectedAttributes(newAttrs);
             }
         }
+        setSelectedImage(0);
     };
 
     if (!product) {
@@ -253,33 +290,62 @@ const ProductDetail = () => {
 
                             {/* Actions */}
                             <div className="flex flex-col gap-4 mt-auto">
-                                <button
-                                    className="w-full py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300"
-                                    style={{
-                                        backgroundColor: '#1b1c1a',
-                                        color: '#fbf9f6',
-                                        fontFamily: "'Inter', sans-serif"
-                                    }}
-                                    onMouseEnter={e => {
-                                        e.currentTarget.style.backgroundColor = '#C9A96E';
-                                        e.currentTarget.style.color = '#1b1c1a';
-                                    }}
-                                    onMouseLeave={e => {
-                                        e.currentTarget.style.backgroundColor = '#1b1c1a';
-                                        e.currentTarget.style.color = '#fbf9f6';
-                                    }}
-                                    onClick={() => {
-                                        handleAddItem({
-                                            productId: product._id,
-                                            variantId: activeVariant._id
-                                        })
-                                    }}
-                                >
-                                    Add to Cart
-                                </button>
+                                {cartItem ? (
+                                    <div
+                                        className="w-full flex items-center justify-between"
+                                        style={{ border: `1px solid #1b1c1a` }}
+                                    >
+                                        <button
+                                            onClick={() => handleDecrementCartItem({ productId: product._id, variantId: activeVariant?._id })}
+                                            className="w-12 h-12 flex items-center justify-center text-lg font-light transition-colors hover:opacity-60"
+                                            style={{ color: '#1b1c1a', borderRight: `1px solid #1b1c1a` }}
+                                            aria-label="Decrease quantity"
+                                        >
+                                            −
+                                        </button>
+                                        <span
+                                            className="flex-1 text-center text-[11px] tracking-[0.25em] font-medium select-none"
+                                            style={{ color: '#1b1c1a' }}
+                                        >
+                                            {cartItem.quantity} IN CART
+                                        </span>
+                                        <button
+                                            onClick={() => handleIncrementCartItem({ productId: product._id, variantId: activeVariant?._id })}
+                                            className="w-12 h-12 flex items-center justify-center text-lg font-light transition-colors hover:opacity-60"
+                                            style={{ color: '#1b1c1a', borderLeft: `1px solid #1b1c1a` }}
+                                            aria-label="Increase quantity"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className={`w-full py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 ${!activeVariant ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        style={{
+                                            backgroundColor: '#1b1c1a',
+                                            color: '#fbf9f6',
+                                            fontFamily: "'Inter', sans-serif"
+                                        }}
+                                        onMouseEnter={e => {
+                                            if (activeVariant) {
+                                                e.currentTarget.style.backgroundColor = '#C9A96E';
+                                                e.currentTarget.style.color = '#1b1c1a';
+                                            }
+                                        }}
+                                        onMouseLeave={e => {
+                                            if (activeVariant) {
+                                                e.currentTarget.style.backgroundColor = '#1b1c1a';
+                                                e.currentTarget.style.color = '#fbf9f6';
+                                            }
+                                        }}
+                                        onClick={onAddToCart}
+                                    >
+                                        Add to Cart
+                                    </button>
+                                )}
 
                                 <button
-                                    className="w-full py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border"
+                                    className={`w-full py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border ${!activeVariant ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     style={{
                                         backgroundColor: 'transparent',
                                         borderColor: '#d0c5b5',
@@ -292,6 +358,7 @@ const ProductDetail = () => {
                                     onMouseLeave={e => {
                                         e.currentTarget.style.borderColor = '#d0c5b5';
                                     }}
+                                    onClick={onBuyNow}
                                 >
                                     Buy Now
                                 </button>
