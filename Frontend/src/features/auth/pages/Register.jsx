@@ -14,22 +14,30 @@ const Register = () => {
         password: '',
         isSeller: false
     });
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+        if (errorMsg) setErrorMsg('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await handleRegister({
-            email: formData.email,
-            contact: formData.contactNumber,
-            password: formData.password,
-            isSeller: formData.isSeller,
-            fullname: formData.fullName
-        });
-        navigate("/");
+        setErrorMsg('');
+        try {
+            await handleRegister({
+                email: formData.email,
+                contact: formData.contactNumber,
+                password: formData.password,
+                isSeller: formData.isSeller,
+                fullname: formData.fullName
+            });
+            navigate("/");
+        } catch (error) {
+            console.error("Registration failed", error);
+            setErrorMsg(error?.response?.data?.message || "Registration failed. Please try again.");
+        }
     };
 
     const inputStyle = {
@@ -255,6 +263,13 @@ const Register = () => {
                                     Register as Seller
                                 </span>
                             </label>
+
+                            {/* Error Message */}
+                            {errorMsg && (
+                                <div className="text-red-600 text-xs font-medium tracking-wide">
+                                    {errorMsg}
+                                </div>
+                            )}
 
                             {/* Sign Up Button */}
                             <button

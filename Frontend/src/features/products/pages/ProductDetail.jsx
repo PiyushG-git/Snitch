@@ -68,15 +68,16 @@ const ProductDetail = () => {
 
     const activeVariant = useMemo(() => {
         if (!product?.variants || product.variants.length === 0) return null;
-        return product.variants.find(v => {
+
+        const match = product.variants.find(v => {
             if (!v.attributes) return false;
             const vKeys = Object.keys(v.attributes);
             const sKeys = Object.keys(selectedAttributes);
             const isMatch = vKeys.every(k => v.attributes[ k ] === selectedAttributes[ k ]);
-            // If they don't have exactly the same keys, they shouldn't perfectly match, 
-            // but we might only care about matching what's available.
             return vKeys.length === sKeys.length && isMatch;
         });
+
+        return match || product.variants[0];
     }, [ product, selectedAttributes ]);
 
     const cartItem = useMemo(() => {

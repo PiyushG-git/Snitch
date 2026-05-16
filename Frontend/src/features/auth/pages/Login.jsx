@@ -11,14 +11,17 @@ const Login = () => {
         email: '',
         password: ''
     });
+    const [ errorMsg, setErrorMsg ] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [ name ]: value }));
+        if (errorMsg) setErrorMsg(''); // clear error on typing
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMsg('');
         try {
             const user = await handleLogin({ email: formData.email, password: formData.password });
             if (user.role == "buyer") {
@@ -28,6 +31,7 @@ const Login = () => {
             }
         } catch (error) {
             console.error("Login failed", error);
+            setErrorMsg(error?.response?.data?.message || "Invalid email or password. Please try again.");
         }
     };
 
@@ -182,6 +186,13 @@ const Login = () => {
                                     onBlur={e => e.target.style.borderBottomColor = '#d0c5b5'}
                                 />
                             </div>
+
+                            {/* Error Message */}
+                            {errorMsg && (
+                                <div className="text-red-600 text-xs font-medium tracking-wide">
+                                    {errorMsg}
+                                </div>
+                            )}
 
                             {/* Sign In Button */}
                             <button
